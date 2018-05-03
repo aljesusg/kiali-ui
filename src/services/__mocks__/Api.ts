@@ -3,6 +3,19 @@ import { AxiosError } from 'axios';
 
 const fs = require('fs');
 
+export const login = () => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(`./src/services/__mockData__/getStatus.json`, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Parse the data as JSON and put in the key entity (just like the request library does)
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+};
+
 export const getNamespaces = () => {
   return new Promise((resolve, reject) => {
     fs.readFile(`./src/services/__mockData__/getNamespaces.json`, 'utf8', (err, data) => {

@@ -11,7 +11,8 @@ const _tester = (path: string, expectedMenuPath: string) => {
 };
 
 describe('Navigation test', () => {
-  it('should select menu item according to browser url', () => {
+  it('should select menu item according to browser url when is logged', () => {
+    sessionStorage.setItem('user', 'user');
     _tester('/services', servicesTitle);
     _tester('/rules', istioRulesTitle);
   });

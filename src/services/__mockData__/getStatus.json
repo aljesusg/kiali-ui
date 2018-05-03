@@ -1,0 +1,22 @@
+{
+  "status": {
+    "Kiali console version": "0.2.10-SNAPSHOT.499",
+    "Kiali core commit hash": "b36195fa28439016c78a35cd5fcb9a87ca27540a",
+    "Kiali core version": "0.3.0.Alpha-SNAPSHOT",
+    "Kiali state": "running"
+  },
+  "products": [
+    {
+      "name": "Istio",
+      "version": "0.7.1"
+    },
+    {
+      "name": "Prometheus",
+      "version": "2.0.0"
+    },
+    {
+      "name": "Kubernetes",
+      "version": "v1.7.6+a08f5eeb62"
+    }
+  ]
+}

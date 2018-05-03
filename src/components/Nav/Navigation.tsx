@@ -10,10 +10,12 @@ import MessageCenter from '../../containers/MessageCenterContainer';
 import IstioRulesPage from '../../pages/IstioRulesList/IstioRuleListPage';
 import IstioRuleDetailsPage from '../../pages/IstioRuleDetails/IstioRuleDetailsPage';
 import HelpDropdown from './HelpDropdown';
+import UserDropdown from './UserDropdown';
 import ServiceDetailsPage from '../../pages/ServiceDetails/ServiceDetailsPage';
 import { ServiceGraphRouteHandler } from '../../pages/ServiceGraph';
 import ServiceListPage from '../../pages/ServiceList/ServiceListPage';
 import ServiceJaegerPage from '../../pages/ServiceJaeger/ServiceJaegerPage';
+import ConnectedLoginPage from '../../pages/Login/LoginPage';
 
 const istioRulesPath = '/rules';
 export const istioRulesTitle = 'Istio Mixer';
@@ -99,26 +101,30 @@ class Navigation extends React.Component<PropsType, StateType> {
   };
 
   render() {
+    let authenticated = sessionStorage.getItem('user');
     return (
       <>
-        <VerticalNav
-          setControlledState={this.setControlledState}
-          activePath={this.state.selectedItem}
-          navCollapsed={this.state.navCollapsed}
-        >
-          <VerticalNav.Masthead title="Kiali">
-            <VerticalNav.Brand iconImg={pfLogo} titleImg={pfBrand} />
-            <VerticalNav.IconBar>
-              <MessageCenter.Trigger />
-              <HelpDropdown />
-            </VerticalNav.IconBar>
-            <MessageCenter drawerTitle="Message Center" />
-          </VerticalNav.Masthead>
-          <VerticalNav.Item title={serviceGraphTitle} iconClass="fa pficon-topology" onClick={this.navigateTo} />
-          <VerticalNav.Item title={servicesTitle} iconClass="fa pficon-service" onClick={this.navigateTo} />
-          <VerticalNav.Item title={istioRulesTitle} iconClass="fa pficon-migration" onClick={this.navigateTo} />
-          <VerticalNav.Item title={servicesJaeger} iconClass="fa fa-paw" onClick={this.navigateTo} />
-        </VerticalNav>
+        {authenticated && (
+          <VerticalNav
+            setControlledState={this.setControlledState}
+            activePath={this.state.selectedItem}
+            navCollapsed={this.state.navCollapsed}
+          >
+            <VerticalNav.Masthead title="Kiali">
+              <VerticalNav.Brand iconImg={pfLogo} titleImg={pfBrand} />
+              <VerticalNav.IconBar>
+                <MessageCenter.Trigger />
+                <HelpDropdown />
+                <UserDropdown />
+              </VerticalNav.IconBar>
+              <MessageCenter drawerTitle="Message Center" />
+            </VerticalNav.Masthead>
+            <VerticalNav.Item title={serviceGraphTitle} iconClass="fa pficon-topology" onClick={this.navigateTo} />
+            <VerticalNav.Item title={servicesTitle} iconClass="fa pficon-service" onClick={this.navigateTo} />
+            <VerticalNav.Item title={istioRulesTitle} iconClass="fa pficon-migration" onClick={this.navigateTo} />
+            <VerticalNav.Item title={servicesJaeger} iconClass="fa fa-paw" onClick={this.navigateTo} />
+          </VerticalNav>
+        )}
         <SwitchErrorBoundary
           fallBackComponent={() => (
             <PfContainerNavVertical>
@@ -126,13 +132,21 @@ class Navigation extends React.Component<PropsType, StateType> {
             </PfContainerNavVertical>
           )}
         >
-          <Route path="/service-graph/:namespace" component={ServiceGraphRouteHandler} />
-          <Route path={servicesPath} component={ServiceListPage} />
-          <Route path={servicesJaegerPath} component={ServiceJaegerPage} />
-          <Route path="/namespaces/:namespace/services/:service" component={ServiceDetailsPage} />
-          <Route path={istioRulesPath} component={IstioRulesPage} />
-          <Route path="/namespaces/:namespace/rules/:rule" component={IstioRuleDetailsPage} />
-          <Redirect to={serviceGraphPath} />
+          {authenticated ? (
+            <div>
+              <Route path="/service-graph/:namespace" component={ServiceGraphRouteHandler} />
+              <Route path={servicesPath} component={ServiceListPage} />
+              <Route path={servicesJaegerPath} component={ServiceJaegerPage} />
+              <Route path="/namespaces/:namespace/services/:service" component={ServiceDetailsPage} />
+              <Route path={istioRulesPath} component={IstioRulesPage} />
+              <Route path="/namespaces/:namespace/rules/:rule" component={IstioRuleDetailsPage} />
+              <Redirect to={serviceGraphPath} />
+            </div>
+          ) : (
+            <div>
+              <ConnectedLoginPage dispatch={null} />
+            </div>
+          )}
         </SwitchErrorBoundary>
       </>
     );

@@ -1,5 +1,4 @@
 jest.mock('../Api');
-
 const API = require('../Api');
 
 describe('#GetNamespaces using Promises', () => {

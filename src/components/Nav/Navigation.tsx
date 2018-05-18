@@ -104,36 +104,34 @@ class Navigation extends React.Component<PropsType, StateType> {
     let authenticated = sessionStorage.getItem('user');
     return (
       <>
-        {authenticated && (
-          <VerticalNav
-            setControlledState={this.setControlledState}
-            activePath={this.state.selectedItem}
-            navCollapsed={this.state.navCollapsed}
-          >
-            <VerticalNav.Masthead title="Kiali">
-              <VerticalNav.Brand iconImg={pfLogo} titleImg={pfBrand} />
-              <VerticalNav.IconBar>
-                <MessageCenter.Trigger />
-                <HelpDropdown />
-                <UserDropdown />
-              </VerticalNav.IconBar>
-              <MessageCenter drawerTitle="Message Center" />
-            </VerticalNav.Masthead>
-            <VerticalNav.Item title={serviceGraphTitle} iconClass="fa pficon-topology" onClick={this.navigateTo} />
-            <VerticalNav.Item title={servicesTitle} iconClass="fa pficon-service" onClick={this.navigateTo} />
-            <VerticalNav.Item title={istioRulesTitle} iconClass="fa pficon-migration" onClick={this.navigateTo} />
-            <VerticalNav.Item title={servicesJaeger} iconClass="fa fa-paw" onClick={this.navigateTo} />
-          </VerticalNav>
-        )}
-        <SwitchErrorBoundary
-          fallBackComponent={() => (
-            <PfContainerNavVertical>
-              <h2>Sorry, there was a problem. Try a refresh or navigate to a different page.</h2>
-            </PfContainerNavVertical>
-          )}
-        >
-          {authenticated ? (
-            <div>
+        {authenticated ? (
+          <div>
+            <VerticalNav
+              setControlledState={this.setControlledState}
+              activePath={this.state.selectedItem}
+              navCollapsed={this.state.navCollapsed}
+            >
+              <VerticalNav.Masthead title="Kiali">
+                <VerticalNav.Brand iconImg={pfLogo} titleImg={pfBrand} />
+                <VerticalNav.IconBar>
+                  <MessageCenter.Trigger />
+                  <HelpDropdown />
+                  <UserDropdown />
+                </VerticalNav.IconBar>
+                <MessageCenter drawerTitle="Message Center" />
+              </VerticalNav.Masthead>
+              <VerticalNav.Item title={serviceGraphTitle} iconClass="fa pficon-topology" onClick={this.navigateTo} />
+              <VerticalNav.Item title={servicesTitle} iconClass="fa pficon-service" onClick={this.navigateTo} />
+              <VerticalNav.Item title={istioRulesTitle} iconClass="fa pficon-migration" onClick={this.navigateTo} />
+              <VerticalNav.Item title={servicesJaeger} iconClass="fa fa-paw" onClick={this.navigateTo} />
+            </VerticalNav>
+            <SwitchErrorBoundary
+              fallBackComponent={() => (
+                <PfContainerNavVertical>
+                  <h2>Sorry, there was a problem. Try a refresh or navigate to a different page.</h2>
+                </PfContainerNavVertical>
+              )}
+            >
               <Route path="/service-graph/:namespace" component={ServiceGraphRouteHandler} />
               <Route path={servicesPath} component={ServiceListPage} />
               <Route path={servicesJaegerPath} component={ServiceJaegerPage} />
@@ -141,13 +139,14 @@ class Navigation extends React.Component<PropsType, StateType> {
               <Route path={istioRulesPath} component={IstioRulesPage} />
               <Route path="/namespaces/:namespace/rules/:rule" component={IstioRuleDetailsPage} />
               <Redirect to={serviceGraphPath} />
-            </div>
-          ) : (
-            <div>
-              <ConnectedLoginPage dispatch={null} />
-            </div>
-          )}
-        </SwitchErrorBoundary>
+            </SwitchErrorBoundary>
+          </div>
+        ) : (
+          <div>
+            <ConnectedLoginPage dispatch={null} />
+          </div>
+        )}
+        > )}
       </>
     );
   }

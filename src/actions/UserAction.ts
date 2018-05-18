@@ -1,13 +1,10 @@
 import { userConstants } from '../config';
 import * as userService from '../services/User';
-import { createBrowserHistory } from 'history';
 
 export enum UserActionType {
   LOGIN = 'login',
   LOGOUT = 'logout'
 }
-
-export const history = createBrowserHistory();
 
 const request = user => {
   return { type: userConstants.LOGIN_REQUEST, user };

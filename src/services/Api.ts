@@ -1,25 +1,32 @@
 import axios, { AxiosError } from 'axios';
-import { config } from '../config';
 import Namespace from '../types/Namespace';
 import MetricsOptions from '../types/MetricsOptions';
 import ServiceListOptions from '../types/ServiceListOptions';
+import store from '../store/ConfigStore';
 
-const auth = (user: string, pass: string) => {
+export const authentication = (user: string = '', pass: string = '') => {
+  const actualState = store.getState() || {};
+  let username = user;
+  let password = pass;
+  if (actualState['authentication']['user'] !== undefined) {
+    username = actualState['authentication']['user'].username;
+    password = actualState['authentication']['user'].password;
+  }
   return {
-    username: user,
-    password: pass
+    username: username,
+    password: password
   };
 };
 
-let newRequest = (method: string, url: string, queryParams: any, data: any) => {
+let newRequest = (method: string, url: string, queryParams: any, data: any, auth: any = null) => {
   return new Promise((resolve, reject) => {
     axios({
       method: method,
       url: url,
       data: data,
-      headers: {},
+      headers: { 'X-Auth-Type-Kiali-UI': '1' },
       params: queryParams,
-      auth: auth(config().backend.user, config().backend.password)
+      auth: auth || authentication()
     })
       .then(response => {
         resolve(response);
@@ -28,6 +35,10 @@ let newRequest = (method: string, url: string, queryParams: any, data: any) => {
         reject(error);
       });
   });
+};
+
+export const login = (username: string, password: string) => {
+  return newRequest('get', '/api/status', {}, {}, authentication(username, password));
 };
 
 export const getStatus = () => {

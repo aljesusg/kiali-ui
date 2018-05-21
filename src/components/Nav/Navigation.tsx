@@ -10,10 +10,13 @@ import MessageCenter from '../../containers/MessageCenterContainer';
 import IstioConfigPage from '../../pages/IstioConfigList/IstioConfigListPage';
 import IstioConfigDetailsPage from '../../pages/IstioConfigDetails/IstioConfigDetailsPage';
 import HelpDropdown from './HelpDropdown';
+import UserDropdown from './UserDropdown';
 import ServiceDetailsPage from '../../pages/ServiceDetails/ServiceDetailsPage';
 import ServiceGraphRouteHandler from '../../pages/ServiceGraph/ServiceGraphRouteHandler';
 import ServiceListPage from '../../pages/ServiceList/ServiceListPage';
 import ServiceJaegerPage from '../../pages/ServiceJaeger/ServiceJaegerPage';
+import ConnectedLoginPage from '../../pages/Login/LoginPage';
+import store from '../../store/ConfigStore';
 
 const istioConfigPath = '/istio';
 export const istioConfigTitle = 'Istio Config';
@@ -37,6 +40,7 @@ type PropsType = {
 type StateType = {
   selectedItem: string;
   navCollapsed: boolean;
+  authenticated: boolean;
 };
 
 class Navigation extends React.Component<PropsType, StateType> {
@@ -85,7 +89,8 @@ class Navigation extends React.Component<PropsType, StateType> {
     const selected = Navigation.parsePath(props.location.pathname);
     this.state = {
       selectedItem: `/${selected}/`,
-      navCollapsed: false
+      navCollapsed: false,
+      authenticated: false
     };
   }
 
@@ -98,8 +103,24 @@ class Navigation extends React.Component<PropsType, StateType> {
     }
   };
 
+  authenticated = (logged: boolean) => {
+    this.setState({ authenticated: logged });
+    let className = 'login-pf';
+    if (logged) {
+      className = 'layout-pf layout-pf-fixed';
+    }
+    document.documentElement.className = className;
+  };
+
   render() {
-    return (
+    store.subscribe(() => {
+      const actualState = store.getState() || {};
+      if (actualState['authentication']['user'] !== undefined) {
+        this.authenticated(true);
+      }
+    });
+
+    return this.state.authenticated ? (
       <>
         <VerticalNav
           setControlledState={this.setControlledState}
@@ -111,6 +132,7 @@ class Navigation extends React.Component<PropsType, StateType> {
             <VerticalNav.IconBar>
               <MessageCenter.Trigger />
               <HelpDropdown />
+              <UserDropdown handleAuthenticate={this.authenticated} />
             </VerticalNav.IconBar>
             <MessageCenter drawerTitle="Message Center" />
           </VerticalNav.Masthead>
@@ -135,6 +157,8 @@ class Navigation extends React.Component<PropsType, StateType> {
           <Redirect to={serviceGraphPath} />
         </SwitchErrorBoundary>
       </>
+    ) : (
+      <ConnectedLoginPage dispatch={undefined} />
     );
   }
 

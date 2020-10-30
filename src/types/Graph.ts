@@ -179,6 +179,7 @@ export interface GraphNodeData {
   hasCB?: boolean;
   hasMissingSC?: boolean;
   hasVS?: boolean;
+  healthAnnotation?: any;
   isDead?: boolean;
   isGroup?: string;
   isInaccessible?: boolean;

@@ -33,6 +33,7 @@ export interface WorkloadNode {
   type: NodeType.WORKLOAD;
   namespace: string;
   name: string;
+  healthAnnotation: any;
   isInaccessible: boolean;
 }
 
@@ -41,6 +42,7 @@ export interface ServiceNode {
   type: NodeType.SERVICE;
   namespace: string;
   name: string;
+  healthAnnotation: any;
   isServiceEntry?: string;
   isInaccessible: boolean;
   destServices?: DestService[];
@@ -199,6 +201,7 @@ class TrafficDetails extends React.Component<TrafficDetailsProps, TrafficDetails
           type: node.nodeType,
           namespace: node.namespace,
           name: node.service || 'unknown',
+          healthAnnotation: node.healthAnnotation,
           isServiceEntry: node.isServiceEntry,
           isInaccessible: node.isInaccessible || false,
           destServices: node.destServices
@@ -209,6 +212,7 @@ class TrafficDetails extends React.Component<TrafficDetailsProps, TrafficDetails
           type: NodeType.WORKLOAD,
           namespace: node.namespace,
           name: node.workload || 'unknown',
+          healthAnnotation: node.healthAnnotation,
           isInaccessible: node.isInaccessible || false
         };
     }

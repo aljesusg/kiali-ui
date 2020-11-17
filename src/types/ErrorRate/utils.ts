@@ -6,6 +6,11 @@ import { Rate, RequestTolerance } from './types';
 import { generateRateForTolerance } from './ErrorRate';
 import { generateRateForGraphTolerance } from './GraphEdgeStatus';
 
+enum Config {
+  HEALTH_CONFIG = 'health_config',
+  RATE_CONFIG = 'rate'
+}
+
 export const emptyRate = (): Rate => {
   return { requestRate: 0, errorRate: 0, errorRatio: 0 };
 };
@@ -116,4 +121,26 @@ export const aggregate = (
     }
   }
   return result;
+};
+
+export const validateAnnotationHealth = (annotation: string): { presence: boolean; error: string } => {
+  var obj = JSON.parse(annotation);
+  var presence = false;
+  var error = 'Kiali Annotation is not a json format';
+
+  if (obj) {
+    var rate = obj[Config.HEALTH_CONFIG][Config.RATE_CONFIG];
+    if (rate) {
+      presence = true;
+      // only implement if no native implementation is available
+      if (typeof rate.isArray === 'undefined') {
+        rate.isArray = function (obj) {
+          return Object.prototype.toString.call(obj) === '[object Array]';
+        };
+      }
+    }
+    error = 'Kiali Annotation has not health Config defined for rate';
+  }
+
+  return { presence, error };
 };

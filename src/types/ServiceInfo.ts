@@ -46,6 +46,7 @@ export interface Service {
   externalName: string;
   labels?: { [key: string]: string };
   selectors?: { [key: string]: string };
+  annotations: { [key: string]: string };
 }
 
 export interface ServiceDetailsInfo {

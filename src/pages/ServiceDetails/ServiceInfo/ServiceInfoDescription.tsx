@@ -1,5 +1,18 @@
 import * as React from 'react';
-import { Card, CardBody, Grid, GridItem, Stack, StackItem, Tab, Tabs, Title, Tooltip } from '@patternfly/react-core';
+import {
+  Badge,
+  Card,
+  CardBody,
+  Grid,
+  GridItem,
+  Stack,
+  StackItem,
+  Tab,
+  Tabs,
+  Title,
+  Tooltip,
+  TooltipPosition
+} from '@patternfly/react-core';
 import { EyeIcon } from '@patternfly/react-icons';
 import { style } from 'typestyle';
 import LocalTime from '../../../components/Time/LocalTime';
@@ -17,6 +30,8 @@ import { renderAPILogo } from 'components/Logo/Logos';
 import './ServiceInfoDescription.css';
 import MiniGraphCard from '../../../components/CytoscapeGraph/MiniGraphCard';
 import MissingSidecar from '../../../components/MissingSidecar/MissingSidecar';
+import { Annotation, KialiAnnotation } from '../../../types/Annotation';
+import { PfColors } from '../../../components/Pf/PfColors';
 
 interface ServiceInfoDescriptionProps {
   name: string;
@@ -35,10 +50,12 @@ interface ServiceInfoDescriptionProps {
   health?: ServiceHealth;
   validations?: ObjectValidation;
   miniGraphDatasource: GraphDataSource;
+  annotations?: { [key: string]: string };
 }
 
 type State = {
   serviceInfoTabKey: number;
+  kialiAnnotation: KialiAnnotation | undefined;
 };
 
 const listStyle = style({
@@ -56,7 +73,11 @@ class ServiceInfoDescription extends React.Component<ServiceInfoDescriptionProps
   constructor(props: ServiceInfoDescriptionProps) {
     super(props);
     this.state = {
-      serviceInfoTabKey: 0
+      serviceInfoTabKey: 0,
+      kialiAnnotation:
+        this.props.annotations && 'kiali' in this.props.annotations
+          ? new KialiAnnotation(this.props.annotations['kiali'])
+          : undefined
     };
   }
 
@@ -79,6 +100,13 @@ class ServiceInfoDescription extends React.Component<ServiceInfoDescriptionProps
   hasIssue(portId: number): boolean {
     return this.getPortChecks(portId).length > 0;
   }
+
+  getkialiValidations = (): Annotation[] => {
+    if (this.props.annotations && 'kiali' in this.props.annotations) {
+      return new KialiAnnotation(this.props.annotations['kiali']).validations;
+    }
+    return [];
+  };
 
   render() {
     return (
@@ -150,6 +178,33 @@ class ServiceInfoDescription extends React.Component<ServiceInfoDescriptionProps
                         </StackItem>
                       );
                     })}
+                    {this.props.annotations && 'kiali' in this.props.annotations && (
+                      <StackItem id={'annotations'}>
+                        <Title headingLevel="h6" size="md">
+                          Kiali Annotation
+                        </Title>
+                        {this.getkialiValidations().map(annotation => {
+                          const badge = (
+                            <Badge
+                              key={annotation.id}
+                              className="virtualitem_badge_definition"
+                              style={{
+                                marginBottom: '2px',
+                                backgroundColor: !annotation.validated ? PfColors.Orange300 : ''
+                              }}
+                            >
+                              {annotation.title}
+                            </Badge>
+                          );
+                          const content = annotation.validated ? JSON.stringify(annotation.content) : annotation.error;
+                          return (
+                            <Tooltip position={TooltipPosition.auto} content={<>{content}</>}>
+                              {badge}
+                            </Tooltip>
+                          );
+                        })}
+                      </StackItem>
+                    )}
                   </Stack>
                 </Tab>
                 <Tab eventKey={1} title={'Network'}>

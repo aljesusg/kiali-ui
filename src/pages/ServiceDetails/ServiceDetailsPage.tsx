@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Tab } from '@patternfly/react-core';
 
 import ServiceId from '../../types/ServiceId';
+import Annotation from '../../components/Annotation/Annotation';
 import IstioMetricsContainer from '../../components/Metrics/IstioMetrics';
 import { RenderHeader } from '../../components/Nav/Page';
 import { MetricsObjectTypes } from '../../types/Metrics';
@@ -15,6 +16,7 @@ import ServiceInfo from './ServiceInfo';
 import TracesComponent from 'components/JaegerIntegration/TracesComponent';
 import { JaegerInfo } from 'types/JaegerInfo';
 import TrafficDetails from 'components/TrafficList/TrafficDetails';
+import * as API from '../../services/Api';
 
 type ServiceDetailsState = {
   currentTab: string;
@@ -28,12 +30,14 @@ interface ServiceDetailsProps extends RouteComponentProps<ServiceId> {
 const tabName = 'tab';
 const defaultTab = 'info';
 const trafficTabName = 'traffic';
+const annotatioNTabname = 'annotation';
 
 const tabIndex: { [tab: string]: number } = {
   info: 0,
   traffic: 1,
   metrics: 2,
-  traces: 3
+  traces: 3,
+  anotation: 4
 };
 
 class ServiceDetails extends React.Component<ServiceDetailsProps, ServiceDetailsState> {
@@ -104,6 +108,19 @@ class ServiceDetails extends React.Component<ServiceDetailsProps, ServiceDetails
         </Tab>
       );
     }
+
+    tabsArray.push(
+      <Tab eventKey={4} title="Annotation" key={annotatioNTabname}>
+        <Annotation
+          fetchAnnotation={API.getServiceDetail(
+            this.props.match.params.namespace,
+            this.props.match.params.service,
+            true,
+            this.props.duration
+          )}
+        />
+      </Tab>
+    );
 
     return (
       <>

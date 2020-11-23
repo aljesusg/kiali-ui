@@ -26,6 +26,7 @@ import { StatefulFilters } from '../Filters/StatefulFilters';
 import { GetIstioObjectUrl } from '../Link/IstioObjectLink';
 import { labelFilter } from 'components/Filters/CommonFilters';
 import { labelFilter as NsLabelFilter } from '../../pages/Overview/Filters';
+import { KialiAnnotation } from '../../types/Annotation';
 
 // Links
 
@@ -58,6 +59,9 @@ export const details: Renderer<AppListItem | WorkloadListItem | ServiceListItem>
   const hasMissingApp = isWorkload && !item['appLabel'];
   const hasMissingVersion = isWorkload && !item['versionLabel'];
   const additionalDetails = (item as WorkloadListItem | ServiceListItem).additionalDetailSample;
+  const kialiAnnotation = (item as WorkloadListItem | ServiceListItem).annotations
+    ? 'kiali' in (item as WorkloadListItem | ServiceListItem).annotations
+    : false;
   const spacer = hasMissingSC && additionalDetails && additionalDetails.icon;
   return (
     <td
@@ -93,8 +97,29 @@ export const details: Renderer<AppListItem | WorkloadListItem | ServiceListItem>
         {additionalDetails && additionalDetails.icon && (
           <li>{renderAPILogo(additionalDetails.icon, additionalDetails.title, 0)}</li>
         )}
+        {kialiAnnotation && renderKialiAnnotation((item as WorkloadListItem | ServiceListItem).annotations['kiali'])}
       </ul>
     </td>
+  );
+};
+
+const renderKialiAnnotation = (annotation: string) => {
+  const kialiValidation = new KialiAnnotation(annotation);
+
+  const badge = (
+    <Badge
+      className="virtualitem_badge_definition"
+      style={{ marginBottom: '2px', backgroundColor: !kialiValidation.isJson ? PfColors.Orange300 : '' }}
+    >
+      Kiali Annotation
+    </Badge>
+  );
+  return kialiValidation.isJson ? (
+    badge
+  ) : (
+    <Tooltip position={TooltipPosition.auto} content={<>Kiali annotation is not a json format</>}>
+      {badge}
+    </Tooltip>
   );
 };
 

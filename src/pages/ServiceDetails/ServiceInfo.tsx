@@ -244,6 +244,7 @@ class ServiceInfo extends React.Component<Props, ServiceInfoState> {
                 externalName={this.state.serviceDetails?.service.externalName}
                 validations={this.getServiceValidation()}
                 miniGraphDatasource={this.graphDataSource}
+                annotations={this.state.serviceDetails?.service.annotations || undefined}
               />
             </GridItem>
             {this.state.serviceDetails && (
